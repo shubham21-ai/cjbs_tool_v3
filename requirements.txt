@@ -1,0 +1,16 @@
+streamlit
+langchain
+langchain-google-genai
+langchain-community
+python-dotenv
+tavily-python
+google-generativeai
+pandas
+requests
+beautifulsoup4
+duckduckgo_search
+exa-py
+gspread
+gspread_dataframe
+google-auth
+ipython
