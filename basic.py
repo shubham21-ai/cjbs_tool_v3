@@ -19,11 +19,11 @@ load_dotenv()
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 TAVILY_API_KEY = os.getenv("TAVILY_API_KEY")
 SERPAPI_API_KEY = os.getenv("SERPAPI_API_KEY")
-GROQ_API_KEY=os.getenv("GROQ_API_KEY")
+
 os.environ["GOOGLE_API_KEY"] = GOOGLE_API_KEY
 os.environ["TAVILY_API_KEY"] = TAVILY_API_KEY
 os.environ["SERPAPI_API_KEY"] = SERPAPI_API_KEY
-os.environ["GROQ_API_KEY"] = GROQ_API_KEY
+
 
 class BasicInfoBot:
     def __init__(self):
