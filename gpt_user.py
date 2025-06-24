@@ -91,7 +91,7 @@ class UserBot:
     def _initialize_agent(self):
         """Initialize the agent"""
         self.llm = ChatGoogleGenerativeAI(
-            model="gemini-1.5-flash",
+            model="gemini-2.0-flash",
             api_key=GOOGLE_API_KEY,
             temperature=0.1,  # Lower temperature for more consistent output
             max_retries=3,
