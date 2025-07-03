@@ -171,7 +171,6 @@ def load_satellite_data(satellite_name):
             "technical_specs": {},
             "launch_cost_info": {}
         }
-    
     if satellite_name not in st.session_state.gpt_data:
         st.session_state.gpt_data[satellite_name] = {
             "user_info": {},
@@ -180,7 +179,6 @@ def load_satellite_data(satellite_name):
             "frugal": {},
             "numeric": {}
         }
-    
     # Load from file system if not already loaded
     if satellite_name not in st.session_state.data_loaded:
         try:
@@ -188,15 +186,17 @@ def load_satellite_data(satellite_name):
             basic_data = data_manager.get_satellite_data(satellite_name, "basic_info")
             if basic_data and basic_data.get("data"):
                 st.session_state.satellite_data[satellite_name]["basic_info"] = basic_data["data"]
-            
             tech_data = data_manager.get_satellite_data(satellite_name, "technical_specs")
             if tech_data and tech_data.get("data"):
                 st.session_state.satellite_data[satellite_name]["technical_specs"] = tech_data["data"]
-            
             cost_data = data_manager.get_satellite_data(satellite_name, "launch_cost_info")
             if cost_data and cost_data.get("data"):
                 st.session_state.satellite_data[satellite_name]["launch_cost_info"] = cost_data["data"]
-            
+            # Load GPT data sections
+            for gpt_key in ["user_info", "purpose_sdg", "tech", "frugal", "numeric"]:
+                gpt_section = data_manager.get_satellite_data(satellite_name, gpt_key)
+                if gpt_section and gpt_section.get("data"):
+                    st.session_state.gpt_data[satellite_name][gpt_key] = gpt_section["data"]
             st.session_state.data_loaded[satellite_name] = True
         except Exception as e:
             st.error(f"Error loading data for {satellite_name}: {str(e)}")
@@ -345,7 +345,7 @@ def render_tab(tab, satellite_name, data_key, bot_class, data_manager=None, sess
                                 if result:
                                     session_dict[data_key] = result
                                     status.success("Agent finished successfully!")
-                                    if data_manager and session_key == "satellite_data":
+                                    if data_manager:
                                         data_manager.append_satellite_data(satellite_name, data_key, result)
                                     st.success(f"{data_key.replace('_', ' ').title()} gathered successfully!")
                                     time.sleep(1)
