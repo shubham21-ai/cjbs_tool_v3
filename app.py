@@ -319,10 +319,10 @@ def render_tab(tab, satellite_name, data_key, bot_class, data_manager=None, sess
             with col2:
                 if st.button(f"Delete {data_key.replace('_', ' ').title()}", key=f"delete_{session_key}_{data_key}_{satellite_name}"):
                     session_dict[data_key] = {}
-                    if data_manager and session_key == "satellite_data":
+                    if data_manager:
                         try:
-                            data_manager.delete_satellite_data(satellite_name, data_key)
-                        except:
+                            data_manager.delete_satellite_section(satellite_name, data_key)
+                        except Exception:
                             pass
                     st.success(f"{data_key.replace('_', ' ').title()} deleted.")
                     time.sleep(1)

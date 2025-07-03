@@ -90,6 +90,16 @@ IMPORTANT INSTRUCTIONS:
 4. Always include a source URL or citation for the technical information.
 5. NEVER use undefined tools or output None.
 
+**Guidance for 'breakthrough_tech':**
+- Describe as a technological breakthrough only if the satellite features major advancements such as:
+    - Autonomous operation, AI-driven systems, or self-repair
+    - Next-generation propulsion (ion/plasma engines)
+    - Quantum communication or encryption
+    - Ultra-miniaturization, modularity, or reusability
+    - Any feature that is a first-of-its-kind or sets a new standard in the field
+- If the technology is an incremental improvement or common in contemporary satellites, do not call it a breakthrough.
+- Always provide a brief justification and evidence for why a feature is or is not a breakthrough.
+
 Available tools: {tool_names}
 
 Previous conversation:

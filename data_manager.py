@@ -51,3 +51,14 @@ class SatelliteDataManager:
             self.save_data()
             return True
         return False
+
+    def delete_satellite_section(self, satellite_name, section):
+        """Delete a specific section (data_key) for a satellite, but not the whole satellite."""
+        if satellite_name in self.data and section in self.data[satellite_name]:
+            del self.data[satellite_name][section]
+            # If no sections left, delete the satellite entirely
+            if not self.data[satellite_name]:
+                del self.data[satellite_name]
+            self.save_data()
+            return True
+        return False

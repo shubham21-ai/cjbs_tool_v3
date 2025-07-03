@@ -109,6 +109,14 @@ IMPORTANT INSTRUCTIONS:
 4. Always include a source URL or citation for the frugality and cost-efficiency information.
 5. NEVER use undefined tools or output None.
 
+**Scoring Criteria:**
+- For each of the following fields, assign a score of 1 (Yes/Efficient/Innovative) or 0 (No/Not Efficient/Not Innovative) based on the evidence you find:
+    - **development_cost_efficiency**: 1 if the satellite demonstrates significant cost-saving measures in development (e.g., use of COTS components, modular design, rapid prototyping, reuse of heritage tech), 0 if development follows traditional, high-cost, or non-innovative approaches.
+    - **operational_cost_efficiency**: 1 if the satellite is designed for low operational costs (e.g., low power consumption, autonomous operation, minimal ground support, long operational life), 0 if it requires high ongoing costs or frequent intervention.
+    - **labour_cost_efficiency**: 1 if the satellite's design or operation reduces labor requirements (e.g., automation, remote operation, minimal launch/maintenance crew), 0 if it is labor-intensive or requires frequent manual intervention.
+    - **frugal_innovation_design**: 1 if the satellite incorporates frugal innovation principles (e.g., doing more with less, creative use of limited resources, indigenous solutions, reusing components), 0 if it does not demonstrate such principles.
+- For each field, provide a brief justification referencing specific features, design choices, or operational practices.
+
 Available tools: {tool_names}
 
 Previous conversation:

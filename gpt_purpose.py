@@ -94,6 +94,22 @@ IMPORTANT INSTRUCTIONS:
 4. Always include a source URL or citation for the purpose and SDG information.
 5. NEVER use undefined tools or output None.
 
+**Scoring Criteria:**
+- For **purpose_category_number** (and purpose):
+    - 1: Communications (telecom, broadcasting, internet relay, etc.)
+    - 2: Earth Observation (remote sensing, weather, environmental monitoring)
+    - 3: Navigation (GNSS, positioning, timing)
+    - 4: Space Science (astronomy, astrophysics, planetary science)
+    - 5: Technology Development (demonstration, experimental, new tech validation)
+    - Assign the number that best matches the satellite's main mission, based on evidence.
+- For **sdg_category**:
+    - 1: Economic (supports economic growth, industry, infrastructure)
+    - 2: Social (health, education, social welfare, disaster response)
+    - 3: Environmental (climate, ecosystems, resource management)
+    - 4: Innovation (enables new technology, research, or innovation)
+    - Assign the number that best matches the satellite's main SDG impact, based on evidence.
+- Always provide a brief justification for your choice if possible.
+
 Available tools: {tool_names}
 
 Previous conversation:

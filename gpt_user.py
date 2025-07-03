@@ -114,6 +114,14 @@ IMPORTANT INSTRUCTIONS:
 4. Always include a source URL or citation for the user information.
 5. NEVER use undefined tools or output None.
 
+**Guidance for user_category_number:**
+- 1: Military (operated/owned by armed forces, defense agencies, or for military purposes)
+- 2: Civil (operated by civil government agencies for non-military, non-commercial purposes, e.g., weather, science)
+- 3: Commercial (owned/operated by private companies for profit, e.g., telecom, imaging)
+- 4: Government (operated by government for public services, not strictly civil or military)
+- 5: Mix (if more than one category applies, e.g., joint civil-military or public-private partnership)
+- Assign the number that best matches the main user/operator, based on evidence, and provide a brief justification if possible.
+
 Available tools: {tool_names}
 
 Previous conversation:

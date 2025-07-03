@@ -90,6 +90,11 @@ IMPORTANT INSTRUCTIONS:
 4. Always include a source URL or citation for the ROI and revenue information.
 5. NEVER use undefined tools or output None.
 
+**Guidance for ROI and Revenue:**
+- A high ROI (e.g., >1.5 or 150%) indicates the satellite generated significant value relative to its cost; a low ROI (e.g., <1 or 100%) means the investment may not have been fully recovered.
+- High revenue from launch (in million USD) should be contextualized: compare to typical mission costs and industry standards.
+- Always provide a brief justification or context for the ROI and revenue values, referencing comparable missions if possible.
+
 Available tools: {tool_names}
 
 Previous conversation:
