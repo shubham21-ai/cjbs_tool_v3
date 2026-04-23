@@ -41,7 +41,12 @@ class SatelliteAgentBase:
             max_retries=5,
         )
 
-        tavily_tool = TavilySearch(max_results=3)
+        tavily_base = TavilySearch(max_results=3)
+        
+        @tool
+        def search_web(query: str) -> str:
+            """Search the web for satellite information. Input must be a simple text query."""
+            return tavily_base.invoke({"query": query})
 
         @tool
         def complete_task(json_data: str) -> str:
@@ -54,7 +59,7 @@ class SatelliteAgentBase:
 
         self.agent = create_react_agent(
             model=llm,
-            tools=[tavily_tool, complete_task],
+            tools=[search_web, complete_task],
         )
 
     # ------------------------------------------------------------------ #
