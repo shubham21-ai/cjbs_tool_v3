@@ -41,82 +41,88 @@ data_manager = get_data_manager()
 # Custom CSS for a soft, light, and modern look
 st.markdown("""
 <style>
-    html, body, [class*="css"]  {
-        font-family: 'Inter', 'Roboto', 'Segoe UI', Arial, sans-serif !important;
-        background: #f2fbf2; /* Light bright green background */
+    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
+
+    html, body, [class*="css"] {
+        font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif !important;
+        background: #f2fbf2;
+        color: #2c3e50;
     }
     .main-header {
         text-align: center;
-        background: #f2fbf2; /* Match page background */
-        color: #333333;
-        padding: 1.1rem 0.5rem 1.1rem 0.5rem;
-        border-radius: 10px;
-        margin-bottom: 1.1rem;
-        font-size: 1.6rem;
+        background: linear-gradient(135deg, #ffffff 0%, #f8fbf8 100%);
+        color: #2c3e50;
+        padding: 1.5rem;
+        border-radius: 12px;
+        margin-bottom: 2rem;
+        font-size: 1.8rem;
         font-weight: 700;
-        letter-spacing: 0.5px;
-        border-bottom: 2px solid #a7d8de; /* Soft blue accent */
-        box-shadow: none; /* Removed shadow for seamless look */
+        border: 1px solid #e2e8f0;
+        border-bottom: 4px solid #a7d8de;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
     }
     .satellite-card {
-        background: #f2fbf2;
-        padding: 0.7rem 1rem;
-        border-radius: 8px;
-        border-left: 4px solid #a7d8de; /* Soft blue accent */
-        margin: 0.5rem 0 1rem 0;
-        box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+        background: #ffffff;
+        padding: 1.2rem 1.5rem;
+        border-radius: 10px;
+        border-left: 5px solid #a7d8de;
+        margin: 0.5rem 0 1.5rem 0;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+        border: 1px solid #edf2f7;
     }
     .data-section {
-        background: #fff;
-        padding: 1rem 1.2rem;
-        border-radius: 8px;
-        border: 1px solid #e3e7ee;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.04);
-        margin: 0.7rem 0;
+        background: #ffffff;
+        padding: 1.2rem;
+        border-radius: 10px;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.03);
+        margin: 0.8rem 0;
+        transition: transform 0.2s ease;
+    }
+    .data-section:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05);
     }
     .stButton > button {
         width: 100%;
-        border-radius: 5px;
+        border-radius: 8px;
         border: none;
-        background: #a7d8de; /* Soft light blue */
-        color: #232526; /* Dark text for high contrast */
-        font-weight: 700; /* Bolder text for readability */
-        margin-bottom: 0.2rem;
-        font-size: 1rem;
-        transition: background 0.2s;
+        background: linear-gradient(135deg, #a7d8de 0%, #8ec9d2 100%);
+        color: #1a202c;
+        font-weight: 600;
+        padding: 0.6rem;
+        margin-bottom: 0.3rem;
+        font-size: 1.05rem;
+        transition: all 0.2s ease;
+        box-shadow: 0 2px 4px rgba(167, 216, 222, 0.4);
     }
     .stButton > button:hover {
-        background: #8ec9d2; /* Slightly darker blue for hover */
-        color: #000000; /* Ensure contrast on hover too */
+        background: linear-gradient(135deg, #8ec9d2 0%, #7dbbc5 100%);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 6px rgba(167, 216, 222, 0.6);
+        color: #000000;
     }
     .stExpanderHeader {
-        font-size: 1rem !important;
-        font-family: 'Inter', 'Roboto', 'Segoe UI', Arial, sans-serif !important;
+        font-size: 1.05rem !important;
+        font-family: 'Outfit', sans-serif !important;
+        font-weight: 500;
+        color: #2c3e50;
     }
     .stExpanderContent {
-        padding-top: 0.2rem !important;
+        padding-top: 0.5rem !important;
     }
     .stMarkdown code, .stCode, .stJson {
-        font-family: 'Fira Mono', 'Menlo', 'Monaco', 'Consolas', monospace !important;
-        font-size: 0.98rem;
-        background: #f4f6fa;
-        color: #232526;
-    }
-    .stTabs [data-baseweb="tab"] {
-        font-size: 1.05rem;
-        font-weight: 500;
-        color: #232526;
-        padding: 0.5rem 1.2rem;
-    }
-    .stTabs [aria-selected="true"] {
-        border-bottom: 2px solid #a7d8de; /* Soft blue accent */
-        color: #3b9ca7;
-        background: #f2fbf2;
+        font-family: 'Fira Code', 'Menlo', 'Monaco', monospace !important;
+        font-size: 0.95rem;
+        background: #f8fafc;
+        color: #2c3e50;
+        border-radius: 6px;
+        border: 1px solid #e2e8f0;
     }
     hr.tech-divider {
         border: none;
-        border-top: 1.5px solid #e3e7ee;
-        margin: 1.2rem 0 1.2rem 0;
+        border-top: 2px dashed #a7d8de;
+        margin: 1.5rem 0;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -452,93 +458,108 @@ if st.session_state.satellite_name:
         <div style='font-size:1rem; color:#555;'>Active Analysis Session &nbsp;|&nbsp; Last Updated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}</div>
     </div>
     """, unsafe_allow_html=True)
-    st.markdown("### Data Type Selection", unsafe_allow_html=True)
-    data_type = st.radio(
-        "Choose Data Type:", 
-        ["Data", "GPT"], 
-        key="data_type_radio",
-        horizontal=True
-    )
-    if data_type == "Data":
-        tab1, tab2, tab3, tab4 = st.tabs([
-            "Basic Info", 
-            "Technical Specs", 
-            "Launch & Cost", 
-            "Combined Data"
-        ])
-        render_tab(tab1, satellite_name, "basic_info", BasicInfoBot, data_manager, session_key="satellite_data")
-        render_tab(tab2, satellite_name, "technical_specs", TechAgent, data_manager, session_key="satellite_data")
-        render_tab(tab3, satellite_name, "launch_cost_info", CostBot, data_manager, session_key="satellite_data")
-        with tab4:
-            st.markdown("<div class='data-section'>", unsafe_allow_html=True)
-            st.subheader("Combined Raw Data")
-            satellite_data = st.session_state.satellite_data.get(satellite_name, {})
-            if any(satellite_data.values()) and any(v for v in satellite_data.values() if v):
-                with st.expander("View Combined JSON", expanded=False):
-                    st.json(satellite_data)
-                col1, col2 = st.columns(2)
-                with col1:
-                    json_str = json.dumps(satellite_data, indent=2)
-                    st.download_button(
-                        label="Download Combined JSON",
-                        data=json_str,
-                        file_name=f"{satellite_name}_all_data.json",
-                        mime="application/json"
-                    )
-                with col2:
-                    if st.button("Upload to Google Sheet"):
-                        with st.spinner("Uploading to Google Sheets..."):
-                            combined_data = {}
-                            for section in ["basic_info", "technical_specs", "launch_cost_info"]:
-                                if satellite_data.get(section):
-                                    combined_data.update(satellite_data[section])
-                            if upload_to_gsheet(satellite_name, combined_data):
-                                st.success("Data uploaded to Google Sheet!")
-                            else:
-                                st.error("Failed to upload data")
-            else:
-                st.info("No combined data available. Gather information from individual tabs first.")
-            st.markdown("</div>", unsafe_allow_html=True)
-    else:
-        tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
-            "User Info", 
-            "Purpose & SDG", 
-            "Technical Analysis", 
-            "Cost Analysis", 
-            "Numeric Insights",
-            "Combined GPT Data"
-        ])
-        render_tab(tab1, satellite_name, "user_info", UserBot, session_key="gpt_data")
-        render_tab(tab2, satellite_name, "purpose_sdg", PurposeBot, session_key="gpt_data")
-        render_tab(tab3, satellite_name, "tech", TechBot, session_key="gpt_data")
-        render_tab(tab4, satellite_name, "frugal", FrugalBot, session_key="gpt_data")
-        render_tab(tab5, satellite_name, "numeric", NumericBot, session_key="gpt_data")
-        with tab6:
-            st.markdown("<div class='data-section'>", unsafe_allow_html=True)
-            st.subheader("Combined GPT Data")
-            gpt_data = st.session_state.gpt_data.get(satellite_name, {})
-            if any(gpt_data.values()) and any(v for v in gpt_data.values() if v):
-                with st.expander("View Combined GPT JSON", expanded=False):
-                    st.json(gpt_data)
-                col1, col2 = st.columns(2)
-                with col1:
-                    json_str = json.dumps(gpt_data, indent=2)
-                    st.download_button(
-                        label="Download GPT Combined JSON",
-                        data=json_str,
-                        file_name=f"{satellite_name}_gpt_all_data.json",
-                        mime="application/json"
-                    )
-                with col2:
-                    if st.button("Upload GPT Data to Google Sheet"):
-                        with st.spinner("Uploading GPT data to Google Sheets..."):
-                            if upload_to_gsheet(satellite_name, gpt_data, "Sheet2"):
-                                st.success("GPT Data uploaded to Google Sheet (Sheet2)!")
-                            else:
-                                st.error("Failed to upload GPT data")
-            else:
-                st.info("No combined GPT data available. Generate insights from individual tabs first.")
-            st.markdown("</div>", unsafe_allow_html=True)
+    # Master Extract All Data Button
+    if st.button("🚀 Extract All Satellite Data (Automated)"):
+        with st.status("Running Autonomous Research Agents...", expanded=True) as status:
+            try:
+                st.write("Initializing Basic Info Bot...")
+                bbot = BasicInfoBot()
+                st.session_state.satellite_data[satellite_name]["basic_info"] = bbot.process_satellite(satellite_name)
+                
+                st.write("Initializing Technical Specifications Bot...")
+                tbot = TechAgent()
+                st.session_state.satellite_data[satellite_name]["technical_specs"] = tbot.process_satellite(satellite_name)
+                
+                st.write("Initializing Launch & Cost Bot...")
+                lbot = CostBot()
+                st.session_state.satellite_data[satellite_name]["launch_cost_info"] = lbot.process_satellite(satellite_name)
+                
+                st.write("Initializing AI Insights Bots...")
+                for key, bot_class, bname in [("user_info", UserBot, "User Info"), 
+                                              ("purpose_sdg", PurposeBot, "Purpose & SDG"), 
+                                              ("tech", TechBot, "Advanced Tech"), 
+                                              ("frugal", FrugalBot, "Frugal"), 
+                                              ("numeric", NumericBot, "Numeric Insights")]:
+                    st.write(f"Gathering {bname}...")
+                    bot = bot_class()
+                    st.session_state.gpt_data[satellite_name][key] = bot.process_satellite(satellite_name)
+                    
+                status.update(label="All extractions completed successfully! Reloading views...", state="complete", expanded=False)
+                
+                if data_manager:
+                    for section in ["basic_info", "technical_specs", "launch_cost_info"]:
+                        data_manager.append_satellite_data(satellite_name, section, st.session_state.satellite_data[satellite_name].get(section, {}))
+                    for section in ["user_info", "purpose_sdg", "tech", "frugal", "numeric"]:
+                        data_manager.append_satellite_data(satellite_name, section, st.session_state.gpt_data[satellite_name].get(section, {}))
+                
+                time.sleep(1)
+                st.rerun()
+            except Exception as e:
+                status.update(label=f"Data Extraction Error: {str(e)}", state="error", expanded=True)
+
+    st.markdown("### 📊 Comprehensive Dashboard")
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.markdown("<h4 style='color:#3b9ca7; margin-bottom:1rem;'>Core Operations</h4>", unsafe_allow_html=True)
+        render_tab(st.container(), satellite_name, "basic_info", BasicInfoBot, data_manager, session_key="satellite_data")
+        render_tab(st.container(), satellite_name, "technical_specs", TechAgent, data_manager, session_key="satellite_data")
+        render_tab(st.container(), satellite_name, "launch_cost_info", CostBot, data_manager, session_key="satellite_data")
+        
+        st.markdown("<div class='data-section'>", unsafe_allow_html=True)
+        st.subheader("Combined Raw Data")
+        satellite_data = st.session_state.satellite_data.get(satellite_name, {})
+        if any(satellite_data.values()) and any(v for v in satellite_data.values() if v):
+            with st.expander("View Combined JSON", expanded=False):
+                st.json(satellite_data)
+            bc1, bc2 = st.columns(2)
+            with bc1:
+                json_str = json.dumps(satellite_data, indent=2)
+                st.download_button(label="Download JSON", data=json_str, file_name=f"{satellite_name}_core_data.json", mime="application/json")
+            with bc2:
+                if st.button("Upload to Google Sheet"):
+                    with st.spinner("Uploading to Google Sheets..."):
+                        combined_data = {}
+                        for section in ["basic_info", "technical_specs", "launch_cost_info"]:
+                            if satellite_data.get(section):
+                                combined_data.update(satellite_data[section])
+                        if upload_to_gsheet(satellite_name, combined_data):
+                            st.success("Uploaded!")
+                        else:
+                            st.error("Upload Failed")
+        else:
+            st.info("No combined data available.")
+        st.markdown("</div>", unsafe_allow_html=True)
+
+    with col2:
+        st.markdown("<h4 style='color:#3b9ca7; margin-bottom:1rem;'>AI Insights</h4>", unsafe_allow_html=True)
+        render_tab(st.container(), satellite_name, "user_info", UserBot, session_key="gpt_data")
+        render_tab(st.container(), satellite_name, "purpose_sdg", PurposeBot, session_key="gpt_data")
+        render_tab(st.container(), satellite_name, "tech", TechBot, session_key="gpt_data")
+        render_tab(st.container(), satellite_name, "frugal", FrugalBot, session_key="gpt_data")
+        render_tab(st.container(), satellite_name, "numeric", NumericBot, session_key="gpt_data")
+        
+        st.markdown("<div class='data-section'>", unsafe_allow_html=True)
+        st.subheader("Combined AI Insight Data")
+        gpt_data = st.session_state.gpt_data.get(satellite_name, {})
+        if any(gpt_data.values()) and any(v for v in gpt_data.values() if v):
+            with st.expander("View Combined GPT JSON", expanded=False):
+                st.json(gpt_data)
+            gc1, gc2 = st.columns(2)
+            with gc1:
+                json_str = json.dumps(gpt_data, indent=2)
+                st.download_button(label="Download AI JSON", data=json_str, file_name=f"{satellite_name}_gpt_data.json", mime="application/json")
+            with gc2:
+                if st.button("Upload AI to Sheet2"):
+                    with st.spinner("Uploading GPT data..."):
+                        if upload_to_gsheet(satellite_name, gpt_data, "Sheet2"):
+                            st.success("Uploaded!")
+                        else:
+                            st.error("Upload Failed")
+        else:
+            st.info("No specific AI data available.")
+        st.markdown("</div>", unsafe_allow_html=True)
 else:
     st.markdown("""
     <div class='data-section' style='max-width: 700px; margin: 2rem auto 0 auto;'>
