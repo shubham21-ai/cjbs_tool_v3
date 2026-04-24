@@ -1,0 +1,46 @@
+# ── Secrets & Environment ─────────────────────────
+.env
+*.env.*
+secrets.toml
+.streamlit/secrets.toml
+
+# ── Python ────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# ── Data & Cache ──────────────────────────────────
+satellite_data.json
+*.json.bak
+
+# ── Virtual environments ──────────────────────────
+venv/
+.venv/
+env/
+.env/
+ENV/
+
+# ── IDE / Editor ──────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# ── Logs ──────────────────────────────────────────
+*.log
+logs/
+
+# ── Jupyter ───────────────────────────────────────
+.ipynb_checkpoints/
+
+# ── PDFs / Large assets ───────────────────────────
+*.pdf
