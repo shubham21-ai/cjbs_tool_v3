@@ -1,4 +1,4 @@
-# 🛰️ SkyTrack — Satellite Intelligence Explorer
+# 🛰️ SkyTrack — Satellite Intelligence Explorer (`cjbs_tool_v3`)
 
 > **AI-powered satellite research platform** that autonomously gathers, structures and exports deep technical intelligence for any satellite — Basic specs, sensor data, launch cost, mission purpose, SDG alignment, user category and more.
 
@@ -91,8 +91,8 @@ User clicks "Run [Agent]"
 ### 1. Clone
 
 ```bash
-git clone https://github.com/shubham21-ai/skytrack.git
-cd skytrack
+git clone https://github.com/shubham21-ai/cjbs_tool_v3.git
+cd cjbs_tool_v3
 ```
 
 ### 2. Install dependencies
@@ -243,7 +243,7 @@ tenacity           # Retry logic
 
 ```bash
 # 1. Fork & clone
-git clone https://github.com/shubham21-ai/skytrack.git
+git clone https://github.com/shubham21-ai/cjbs_tool_v3.git
 
 # 2. Create a feature branch
 git checkout -b feature/your-feature-name
@@ -275,5 +275,5 @@ MIT License — see [LICENSE](LICENSE) for details.
 
 <div align="center">
   <b>Built with ❤️ for the space research community</b><br>
-  <a href="https://github.com/shubham21-ai/skytrack">⭐ Star this repo if you find it useful!</a>
+  <a href="https://github.com/shubham21-ai/cjbs_tool_v3">⭐ Star this repo if you find it useful!</a>
 </div>
