@@ -286,6 +286,16 @@ STATUS_PREFIX = {
 }
 
 
+def _call_bot(bot, satellite_name, step_callback=None):
+    """Call bot.process_satellite with step_callback, falling back gracefully
+    if the deployed agent_base doesn't yet support that parameter."""
+    try:
+        return bot.process_satellite(satellite_name, step_callback=step_callback)
+    except TypeError:
+        # Older deployed agent_base without step_callback — run without it
+        return bot.process_satellite(satellite_name)
+
+
 class LiveReasoningPanel:
     """Appends each agent step as a line in a raw terminal-style code block."""
 
@@ -355,7 +365,7 @@ def render_tab(tab, satellite_name, data_key, bot_class, data_manager=None, sess
                 panel = LiveReasoningPanel(log_ph)
                 try:
                     bot = bot_class()
-                    result = bot.process_satellite(satellite_name, step_callback=panel)
+                    result = _call_bot(bot, satellite_name, step_callback=panel)
                     if result:
                         session_dict[data_key] = result
                         if data_manager:
@@ -492,7 +502,7 @@ if st.session_state.satellite_name:
             panel = LiveReasoningPanel(log_ph)
             try:
                 bot    = bot_class()
-                result = bot.process_satellite(satellite_name, step_callback=panel)
+                result = _call_bot(bot, satellite_name, step_callback=panel)
                 st.session_state[sess_key][satellite_name][data_key] = result
                 if data_manager:
                     data_manager.append_satellite_data(satellite_name, data_key, result)
