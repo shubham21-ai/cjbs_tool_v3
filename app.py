@@ -15,7 +15,6 @@ from cost import CostBot
 from data_manager import SatelliteDataManager
 import pandas as pd
 import os
-import sys
 from dotenv import load_dotenv
 import gspread
 from gspread_dataframe import set_with_dataframe
@@ -275,33 +274,48 @@ def upload_to_gsheet(satellite_name, data_dict, sheet_name="Sheet1"):
         st.error(f"Failed to upload to Google Sheets: {str(e)}")
         return False
 
-# Helper: CaptureStdout for agent logs
-class CaptureStdout:
-    def __init__(self, container):
-        self.container = container
-        self.placeholder = container.empty()
-        self.output = []
-    
-    def write(self, text):
-        if text.strip():
-            self.output.append(text)
-            try:
-                self.placeholder.code(''.join(self.output), language="text")
-            except Exception:
-                try:
-                    self.placeholder = self.container.empty()
-                    self.placeholder.code(''.join(self.output), language="text")
-                except:
-                    pass
-    
-    def flush(self):
-        try:
-            if self.output:
-                self.placeholder.code(''.join(self.output), language="text")
-        except:
-            pass
+# ── Live Reasoning Panel ─────────────────────────────────────────────────────
 
-# Enhanced tab rendering function
+# ── Terminal-style Live Reasoning Panel ─────────────────────────────────────
+
+STATUS_PREFIX = {
+    "running": "...",
+    "done":    "[OK]",
+    "error":   "[ERR]",
+    "warn":    "[WARN]",
+}
+
+
+class LiveReasoningPanel:
+    """Appends each agent step as a line in a raw terminal-style code block."""
+
+    def __init__(self, placeholder):
+        """Pass an st.empty() placeholder."""
+        self._ph = placeholder
+        self._lines: list[str] = []
+
+    def _render(self):
+        self._ph.code("\n".join(self._lines), language="text")
+
+    def __call__(self, step: dict):
+        icon   = step.get("icon", "-")
+        agent  = step.get("agent", "Agent")
+        title  = step.get("title", "")
+        detail = step.get("detail", "")
+        prefix = STATUS_PREFIX.get(step.get("status", "running"), "...")
+        # Build line: [OK] TechBot | LLM response received
+        line = f"{prefix:<6} {agent} | {title}"
+        if detail:
+            line += f"\n       {' ' * len(agent)}   {detail}"
+        self._lines.append(line)
+        self._render()
+
+    def clear(self):
+        self._lines = []
+        self._render()
+
+
+# Enhanced tab rendering function with live reasoning steps
 def render_tab(tab, satellite_name, data_key, bot_class, data_manager=None, session_key="satellite_data"):
     with tab:
         st.markdown("""
@@ -336,36 +350,23 @@ def render_tab(tab, satellite_name, data_key, bot_class, data_manager=None, sess
         else:
             st.info("No data available. Click below to gather information.")
             if st.button(f"Run {data_key.replace('_', ' ').title()}", key=f"gather_{session_key}_{data_key}_{satellite_name}"):
-                with st.spinner(f"Gathering {data_key.replace('_', ' ').title()}..."):
-                    try:
-                        with st.expander("Agent Execution Log", expanded=True):
-                            terminal_container = st.container()
-                            status = terminal_container.empty()
-                            status.info("Agent starting...")
-                            stdout_capture = CaptureStdout(terminal_container)
-                            old_stdout = sys.stdout
-                            sys.stdout = stdout_capture
-                            try:
-                                bot = bot_class()
-                                result = bot.process_satellite(satellite_name)
-                                if result:
-                                    session_dict[data_key] = result
-                                    status.success("Agent finished successfully!")
-                                    if data_manager:
-                                        data_manager.append_satellite_data(satellite_name, data_key, result)
-                                    st.success(f"{data_key.replace('_', ' ').title()} gathered successfully!")
-                                    time.sleep(1)
-                                    st.rerun()
-                                else:
-                                    status.error("Agent returned no data")
-                                    st.error("No data was returned by the agent.")
-                            except Exception as e:
-                                status.error(f"Agent failed: {e}")
-                                st.error(f"Error: {str(e)}")
-                            finally:
-                                sys.stdout = old_stdout
-                    except Exception as e:
-                        st.error(f"Error: {str(e)}")
+                log_ph = st.empty()
+                result_placeholder = st.empty()
+                panel = LiveReasoningPanel(log_ph)
+                try:
+                    bot = bot_class()
+                    result = bot.process_satellite(satellite_name, step_callback=panel)
+                    if result:
+                        session_dict[data_key] = result
+                        if data_manager:
+                            data_manager.append_satellite_data(satellite_name, data_key, result)
+                        result_placeholder.success(f"✅ {data_key.replace('_', ' ').title()} gathered successfully!")
+                        time.sleep(1.5)
+                        st.rerun()
+                    else:
+                        result_placeholder.error("Agent returned no data.")
+                except Exception as e:
+                    result_placeholder.error(f"Error: {str(e)}")
         st.markdown("</div>", unsafe_allow_html=True)
 
 # Initialize session state
@@ -460,42 +461,51 @@ if st.session_state.satellite_name:
     """, unsafe_allow_html=True)
     # Master Extract All Data Button
     if st.button("🚀 Extract All Satellite Data (Automated)"):
-        with st.status("Running Autonomous Research Agents...", expanded=True) as status:
+        # ── pipeline definition ────────────────────────────────────────────────
+        PIPELINE = [
+            ("basic_info",      BasicInfoBot, "satellite_data", "🛰️ Basic Info"),
+            ("technical_specs", TechAgent,    "satellite_data", "⚙️ Technical Specs"),
+            ("launch_cost_info",CostBot,       "satellite_data", "💰 Launch & Cost"),
+            ("user_info",       UserBot,       "gpt_data",       "👤 User Info"),
+            ("purpose_sdg",     PurposeBot,    "gpt_data",       "🌍 Purpose & SDG"),
+            ("tech",            TechBot,       "gpt_data",       "🔬 Advanced Tech"),
+            ("frugal",          FrugalBot,     "gpt_data",       "💡 Frugal Insights"),
+            ("numeric",         NumericBot,    "gpt_data",       "📊 Numeric Insights"),
+        ]
+        total = len(PIPELINE)
+
+        # ── outer progress bar ─────────────────────────────────────────────────
+        overall_bar = st.progress(0, text="Preparing agents…")
+        agent_label = st.empty()
+        log_ph      = st.empty()   # single placeholder reused across agents
+        result_msg  = st.empty()
+
+        all_ok = True
+        for idx, (data_key, bot_class, sess_key, label) in enumerate(PIPELINE):
+            frac = idx / total
+            overall_bar.progress(frac, text=f"Running agent {idx+1}/{total}: {label}")
+            agent_label.markdown(
+                f"<div style='text-align:center; font-size:1rem; font-weight:600; "
+                f"color:#2c3e50; padding:4px 0;'>{label}</div>",
+                unsafe_allow_html=True
+            )
+            panel = LiveReasoningPanel(log_ph)
             try:
-                st.write("Initializing Basic Info Bot...")
-                bbot = BasicInfoBot()
-                st.session_state.satellite_data[satellite_name]["basic_info"] = bbot.process_satellite(satellite_name)
-                
-                st.write("Initializing Technical Specifications Bot...")
-                tbot = TechAgent()
-                st.session_state.satellite_data[satellite_name]["technical_specs"] = tbot.process_satellite(satellite_name)
-                
-                st.write("Initializing Launch & Cost Bot...")
-                lbot = CostBot()
-                st.session_state.satellite_data[satellite_name]["launch_cost_info"] = lbot.process_satellite(satellite_name)
-                
-                st.write("Initializing AI Insights Bots...")
-                for key, bot_class, bname in [("user_info", UserBot, "User Info"), 
-                                              ("purpose_sdg", PurposeBot, "Purpose & SDG"), 
-                                              ("tech", TechBot, "Advanced Tech"), 
-                                              ("frugal", FrugalBot, "Frugal"), 
-                                              ("numeric", NumericBot, "Numeric Insights")]:
-                    st.write(f"Gathering {bname}...")
-                    bot = bot_class()
-                    st.session_state.gpt_data[satellite_name][key] = bot.process_satellite(satellite_name)
-                    
-                status.update(label="All extractions completed successfully! Reloading views...", state="complete", expanded=False)
-                
+                bot    = bot_class()
+                result = bot.process_satellite(satellite_name, step_callback=panel)
+                st.session_state[sess_key][satellite_name][data_key] = result
                 if data_manager:
-                    for section in ["basic_info", "technical_specs", "launch_cost_info"]:
-                        data_manager.append_satellite_data(satellite_name, section, st.session_state.satellite_data[satellite_name].get(section, {}))
-                    for section in ["user_info", "purpose_sdg", "tech", "frugal", "numeric"]:
-                        data_manager.append_satellite_data(satellite_name, section, st.session_state.gpt_data[satellite_name].get(section, {}))
-                
-                time.sleep(1)
-                st.rerun()
+                    data_manager.append_satellite_data(satellite_name, data_key, result)
             except Exception as e:
-                status.update(label=f"Data Extraction Error: {str(e)}", state="error", expanded=True)
+                result_msg.error(f"❌ Error in {label}: {e}")
+                all_ok = False
+
+        overall_bar.progress(1.0, text="All agents finished!")
+        agent_label.empty()
+        if all_ok:
+            result_msg.success("🎉 All data extracted successfully! Reloading…")
+        time.sleep(1.5)
+        st.rerun()
 
     st.markdown("### 📊 Comprehensive Dashboard")
     

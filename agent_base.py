@@ -91,43 +91,96 @@ class SatelliteAgentBase:
         )
 
     @retry(stop=stop_after_attempt(3), wait=wait_exponential(min=1, max=10), reraise=True)
-    def _run(self, satellite_name: str) -> dict:
-        # Step 1: Programmatic Search
+    def _run(self, satellite_name: str, step_callback=None) -> dict:
+        agent_name = self.__class__.__name__
+
+        def _step(icon, title, detail="", status="running"):
+            """Fire a structured step event to any registered callback."""
+            msg = f"{icon} [{agent_name}] {title}"
+            if detail:
+                msg += f" — {detail}"
+            print(msg)
+            if step_callback:
+                step_callback({
+                    "agent": agent_name,
+                    "icon": icon,
+                    "title": title,
+                    "detail": detail,
+                    "status": status,   # "running" | "done" | "error" | "warn"
+                })
+
+        # Step 1: Build & fire the web search
         search_query = self._get_search_query(satellite_name)
+        _step("🔍", "Searching the web", f'query: "{search_query}"')
         try:
             search_results = self.tavily.invoke({"query": search_query})
+            num_results = len(search_results) if isinstance(search_results, list) else 1
             context_str = json.dumps(search_results, indent=2)
+            _step("✅", "Search complete", f"{num_results} result(s) retrieved", "done")
         except Exception as e:
-            print(f"[{self.__class__.__name__}] Search failed: {e}")
+            _step("⚠️", "Search failed, continuing with no context", str(e), "warn")
             context_str = "No search results available."
 
-        # Step 2: Extract with LLM
+        # Step 2: Build prompt & call LLM
+        field_names = ", ".join(f for f, _ in self.fields)
+        _step("🧠", "Sending prompt to LLM", f"extracting fields: {field_names}")
         prompt = self._execute_prompt(satellite_name, context_str)
         response = self.llm.invoke(prompt)
-        
-        # Step 3: Parse JSON
+        _step("✅", "LLM response received", "", "done")
+
+        # Step 3: Parse JSON from LLM output
+        _step("🔧", "Parsing structured JSON from LLM output")
         output = getattr(response, "content", "")
         parsed = self._extract_json(output)
         if parsed and isinstance(parsed, dict):
             # Validate all fields are present
+            missing = []
             for name, _ in self.fields:
                 if name not in parsed:
                     parsed[name] = "NA"
+                    missing.append(name)
+            detail = f"Missing fields defaulted to NA: {missing}" if missing else "All fields extracted"
+            _step("✅", "JSON parsed successfully", detail, "done")
             return parsed
 
-        print(f"[{self.__class__.__name__}] Could not parse JSON – using fallback.")
+        _step("⚠️", "Could not parse JSON — using fallback values", "", "warn")
         return self._fallback_data()
 
-    def process_satellite(self, satellite_name: str) -> dict:
-        print(f"[{self.__class__.__name__}] Processing: {satellite_name}")
+    def process_satellite(self, satellite_name: str, step_callback=None) -> dict:
+        agent_name = self.__class__.__name__
+        print(f"[{agent_name}] Starting: {satellite_name}")
+        if step_callback:
+            step_callback({
+                "agent": agent_name,
+                "icon": "🚀",
+                "title": f"Agent started",
+                "detail": f"Satellite: {satellite_name}",
+                "status": "running",
+            })
         try:
-            result = self._run(satellite_name)
+            result = self._run(satellite_name, step_callback=step_callback)
             if not isinstance(result, dict):
                 result = self._fallback_data()
             result["satellite_name"] = satellite_name
+            if step_callback:
+                step_callback({
+                    "agent": agent_name,
+                    "icon": "🎉",
+                    "title": "Agent finished successfully",
+                    "detail": f"{len(result)} fields collected",
+                    "status": "done",
+                })
             return result
         except Exception as e:
-            print(f"[{self.__class__.__name__}] Error: {e}")
+            print(f"[{agent_name}] Error: {e}")
+            if step_callback:
+                step_callback({
+                    "agent": agent_name,
+                    "icon": "❌",
+                    "title": "Agent encountered an error",
+                    "detail": str(e),
+                    "status": "error",
+                })
             data = self._fallback_data()
             data["satellite_name"] = satellite_name
             data["error"] = str(e)
